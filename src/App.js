@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import Grid from './components/Grid';
 import Canvas from './components/Canvas';
 import OptionsPicker from './components/OptionsPicker';
+import io from 'socket.io-client';
+
 import './App.css';
 
 class App extends Component {
@@ -14,6 +16,12 @@ class App extends Component {
       },
       space: 60 
     }
+    this.socket = io('http://localhost:8080');
+    this.socket.on('ioSetDimensions', (dimensions) => {
+      this.setState({
+        window: dimensions
+      })
+    })
   }
 
   actions(action){
@@ -34,6 +42,7 @@ class App extends Component {
         y: window.innerHeight
       }
     })
+    this.socket.emit('setDimensions', {x: window.innerWidth, y: window.innerHeight})
   }
 
   render() {
