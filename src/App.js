@@ -16,19 +16,35 @@ class App extends Component {
     }
   }
 
-  setArgs(pkg){
+  actions(action){
+    switch (action){
+      case 'clear':
+        this.clearCanvas();
+    }
+  }
+
+  clearCanvas(){
+    this.setState({clear: true}, () => this.setState({clear: false}))
+  }
+
+  setBounds(){
     this.setState({
-      args: pkg
+      window: {
+        x: window.innerWidth,
+        y: window.innerHeight
+      }
     })
   }
 
   render() {
     return (
       <Container>
-        <Canvas window={this.state.window} args={this.state.args || null} />
+        <Canvas clear={this.state.clear} window={this.state.window} />
         <Grid window={this.state.window} space={this.state.space} />
         <OptionsPicker>
           <input type="range" value={this.state.space} min="60" max="200"onChange={(e) => this.setState({space: parseInt(e.target.value)})}/>
+          <button onClick={() => this.clearCanvas()} > Clear </button>
+          <button onClick={() => this.setBounds()} > Set Screen </button>
         </OptionsPicker>
       </Container>
     );

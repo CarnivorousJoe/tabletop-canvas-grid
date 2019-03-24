@@ -5,23 +5,34 @@ export default class Canvas extends Component{
     constructor(props){
         super(props);
         this.state = {
-            drawing: false
+            drawing: false,
         }
         this.canvas = React.createRef();
+    }
+
+    shouldComponentUpdate(props, state){
+        if (props.clear){
+            this.canvasContext.clear();
+            return false;
+        }
+        return true;
     }
 
     componentDidMount(){
         this.canvasContext = this.canvas.current.getContext('2d');
         this.canvasContext.bounds = this.canvas.current.getBoundingClientRect();
-        this.canvasContext.strokeStyle = "#000000"
-	    this.canvasContext.lineWidth = 1
-        this.canvasContext.lineCap = "round"
+        this.canvasContext.strokeStyle = "#000000";
+	    this.canvasContext.lineWidth = 1;
+        this.canvasContext.lineCap = "round";
         this.canvasContext.width = window.innerWidth;
         this.canvasContext.height = window.innerHeight;
+        this.canvasContext.clear = function() {
+            this.clearRect (0, 0, this.bounds.width, this.bounds.height);
+        }
     }
 
     disableDraw(event){
-        this.setState({ drawing: false })
+        this.setState({ drawing: false });
     }
     
     triggerDraw(event){
@@ -32,7 +43,7 @@ export default class Canvas extends Component{
 
         this.setState({
             drawing: true
-        })
+        });
     }
 
     onDrag(event){
