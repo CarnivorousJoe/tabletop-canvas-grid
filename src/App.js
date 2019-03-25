@@ -24,6 +24,10 @@ class App extends Component {
     })
   }
 
+  hideCanvas(){
+    this.socket.emit('hideCanvas');
+  }
+
   actions(action){
     switch (action){
       case 'clear':
@@ -54,6 +58,8 @@ class App extends Component {
           <input type="range" value={this.state.space} min="60" max="200"onChange={(e) => this.setState({space: parseInt(e.target.value)})}/>
           <button onClick={() => this.clearCanvas()} > Clear </button>
           <button onClick={() => this.setBounds()} > Set Screen </button>
+          <button onClick={() => this.hideCanvas()} > Hide Canvas </button>
+
         </OptionsPicker>
       </Container>
     );

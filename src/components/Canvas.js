@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 
 export default class Canvas extends Component{
 
-    constructor(props){
+    constructor( props ){
         super(props);
         this.state = {
             drawing: false,
@@ -12,12 +12,11 @@ export default class Canvas extends Component{
         this.socket = io('http://localhost:8080');
     }
 
-    shouldComponentUpdate(props, state){
+    shouldComponentUpdate( props ){
         if (props.clear){
-            this.canvasContext.clear();
+            this.socket.emit('clear');
             return false;
         }
-        this.canvasContext.bounds = this.canvas.current.getBoundingClientRect();
         return true;
     }
 
@@ -30,14 +29,15 @@ export default class Canvas extends Component{
         this.canvasContext.lineCap = "round";
         this.canvasContext.width = window.innerWidth;
         this.canvasContext.height = window.innerHeight;
+        
         this.canvasContext.clear = function() {
             this.clearRect (0, 0, this.bounds.width, this.bounds.height);
         }
 
-        this.socket.on('ioPenDown', (coordinates) => this.penDown(coordinates))
+        this.socket.on('ioPenDown', ( coordinates ) => this.penDown( coordinates ))
         this.socket.on('ioPenUp', () => this.penUp())
-        this.socket.on('drawing', (coordinates) => this.draw(coordinates))
-
+        this.socket.on('drawing', ( coordinates ) => this.draw( coordinates ))
+        this.socket.on('clear', () => { this.canvasContext.clear() })
     }
 
     penUp(){
@@ -47,11 +47,12 @@ export default class Canvas extends Component{
     }
     
     penDown( {clientX, clientY} ){
+        this.canvasContext.bounds = this.canvas.current.getBoundingClientRect();
         var path = this.calcPath(clientX, clientY);
         if (!this.state.drawing){
             this.setState({
                 drawing: true
-            }, () => this.socket.emit('penDown', {clientX: clientX, clientY: clientY}));
+            }, () => this.socket.emit('penDown', {clientX: path.x, clientY: path.y}));
             this.canvasContext.beginPath();
             this.canvasContext.moveTo(path.x, path.y);
         }
@@ -65,14 +66,12 @@ export default class Canvas extends Component{
     }
 
     draw( {clientX, clientY} ){
-        var path = this.calcPath(clientX, clientY);
-        console.log(path);
-        this.canvasContext.lineTo(path.x, path.y);
+        this.canvasContext.lineTo(clientX, clientY);
         this.canvasContext.stroke();
     }
 
     calcPath( x, y ){
-        var canvasBounds = this.canvasContext.bounds;
+        var canvasBounds = this.canvas.current.getBoundingClientRect();
         return {
             x: x - canvasBounds.left,
             y: y - canvasBounds.top

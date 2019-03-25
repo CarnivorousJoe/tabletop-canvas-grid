@@ -15,13 +15,29 @@ io.on('connection', (client) => {
         io.emit('ioPenDown', coordinates);
     })
 
+    client.on('hideCanvas', () => {
+        client.broadcast.emit('singularHideCanvas');
+    })
+
+    client.on('singularHideCanvas', () => {
+        console.log('Hide Canvas Received');
+        client.emit('ioHideCanvas');
+    })
+
+    client.on('showCanvas', () => {
+        client.broadcast.emit('ioShowCanvas');
+    })
+
     client.on('drawing', (coordinates) => {
-        console.log(coordinates);
         io.emit('drawing', coordinates);
     })
 
     client.on('penUp', () => {
         io.emit('ioPenUp');
+    })
+
+    client.on('clear', () => {
+        io.emit('clear');
     })
 
     client.on('setDimensions', (dimensions) => {

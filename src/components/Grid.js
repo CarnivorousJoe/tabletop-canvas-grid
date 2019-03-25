@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import io from 'socket.io-client';
 
 export default class Grid extends Component{
 
@@ -8,6 +9,9 @@ export default class Grid extends Component{
             space: this.props.space || 20
         }
         this.grid = React.createRef();
+        this.socket = io('http://localhost:8080');
+        this.socket.on('ioHideCanvas', () => {this.hideCanvas()})
+        this.socket.on('ioShowCanvas', () => {this.hideCanvas()})
     }
 
     componentDidMount(){
@@ -18,6 +22,18 @@ export default class Grid extends Component{
         this.ctx.lineCap = "round"
         this.ctx.width = window.innerWidth;
         this.ctx.height = window.innerHeight;
+        this.renderGrid(this.ctx);
+    }
+
+    hideCanvas(){
+        console.log("called");
+        this.ctx.fillStyle = "#000000"
+        this.ctx.beginPath();
+        this.ctx.rect(0, 0, this.ctx.bounds.x, this.ctx.bounds.y);
+        this.ctx.fill();
+    }
+
+    showCanvas(){
         this.renderGrid(this.ctx);
     }
 
