@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import io from 'socket.io-client';
-
+import { socket } from './api'
 export default class Grid extends Component{
 
     constructor(props){
@@ -9,32 +8,31 @@ export default class Grid extends Component{
             space: this.props.space || 20
         }
         this.grid = React.createRef();
-        this.socket = io('http://localhost:8080');
-        this.socket.on('ioHideCanvas', () => {this.hideCanvas()})
-        this.socket.on('ioShowCanvas', () => {this.hideCanvas()})
+        socket.on( 'ioHideCanvas', () => { this.hideCanvas() })
+        socket.on( 'ioShowCanvas', () => { this.showCanvas() })
     }
 
     componentDidMount(){
         this.ctx = this.grid.current.getContext('2d');
         this.ctx.bounds = this.grid.current.getBoundingClientRect();
-        this.ctx.strokeStyle = "#888888"
-	    this.ctx.lineWidth = 1
-        this.ctx.lineCap = "round"
+        this.ctx.strokeStyle = "#888888";
+	    this.ctx.lineWidth = 1;
+        this.ctx.lineCap = "round";
         this.ctx.width = window.innerWidth;
         this.ctx.height = window.innerHeight;
         this.renderGrid(this.ctx);
     }
 
     hideCanvas(){
-        console.log("called");
-        this.ctx.fillStyle = "#000000"
-        this.ctx.beginPath();
-        this.ctx.rect(0, 0, this.ctx.bounds.x, this.ctx.bounds.y);
-        this.ctx.fill();
+        this.setState({
+            background: '#000000'
+        })
     }
 
     showCanvas(){
-        this.renderGrid(this.ctx);
+        this.setState({
+            background: 'none'
+        })
     }
 
     renderGrid(ctx){
@@ -65,7 +63,7 @@ export default class Grid extends Component{
     render(){
         this.renderGrid(this.ctx);
         return (
-            <canvas width={this.props.window.x} height={this.props.window.y} style={{'border': '1px solid red', 'pointerEvents': 'none', 'position': 'absolute'}}ref={this.grid} ></canvas>
+            <canvas width={this.props.window.x} height={this.props.window.y} style={{'border': '1px solid red', 'pointerEvents': 'none', 'position': 'absolute', 'background': this.state.background || 'none'}} ref={this.grid} ></canvas>
         )
     }
 }

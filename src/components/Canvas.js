@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import io from 'socket.io-client';
-
+import { socket } from './api';
 export default class Canvas extends Component{
 
     constructor( props ){
@@ -9,12 +8,11 @@ export default class Canvas extends Component{
             drawing: false,
         }
         this.canvas = React.createRef();
-        this.socket = io('http://localhost:8080');
     }
 
     shouldComponentUpdate( props ){
         if (props.clear){
-            this.socket.emit('clear');
+            socket.emit('clear');
             return false;
         }
         return true;
@@ -34,15 +32,15 @@ export default class Canvas extends Component{
             this.clearRect (0, 0, this.bounds.width, this.bounds.height);
         }
 
-        this.socket.on('ioPenDown', ( coordinates ) => this.penDown( coordinates ))
-        this.socket.on('ioPenUp', () => this.penUp())
-        this.socket.on('drawing', ( coordinates ) => this.draw( coordinates ))
-        this.socket.on('clear', () => { this.canvasContext.clear() })
+        socket.on('ioPenDown', ( coordinates ) => this.penDown( coordinates ))
+        socket.on('ioPenUp', () => this.penUp())
+        socket.on('drawing', ( coordinates ) => this.draw( coordinates ))
+        socket.on('clear', () => { this.canvasContext.clear() })
     }
 
     penUp(){
         if (this.state.drawing){
-            this.setState({ drawing: false }, () => this.socket.emit('penUp'));
+            this.setState( { drawing: false }, () => socket.emit('penUp') );
         }
     }
     
@@ -52,16 +50,16 @@ export default class Canvas extends Component{
         if (!this.state.drawing){
             this.setState({
                 drawing: true
-            }, () => this.socket.emit('penDown', {clientX: path.x, clientY: path.y}));
+            }, () => socket.emit( 'penDown', {clientX: path.x, clientY: path.y} ));
             this.canvasContext.beginPath();
-            this.canvasContext.moveTo(path.x, path.y);
+            this.canvasContext.moveTo( path.x, path.y );
         }
     }
 
     onDrag( {clientX, clientY} ){
         if (this.state.drawing){
             var path = this.calcPath(clientX, clientY);
-            this.socket.emit('drawing', {clientX: path.x, clientY: path.y} )
+            socket.emit('drawing', {clientX: path.x, clientY: path.y} )
         }
     }
 
