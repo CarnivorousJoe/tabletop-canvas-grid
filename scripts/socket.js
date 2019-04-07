@@ -14,4 +14,8 @@ io.on('connection', (client) => {
     client.on('host-path-data', (args) => {
         client.broadcast.emit('path-data', args);
     })
+
+    client.on('set-canvas-dimensions', (args) => {
+        client.broadcast.emit('resize-canvas', args);
+    })
 });

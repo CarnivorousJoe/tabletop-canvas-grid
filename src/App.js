@@ -15,11 +15,11 @@ class App extends Component {
       space: 60,
       hidden: false 
     }
-    socket.on('ioSetDimensions', (dimensions) => {
-      this.setState({
-        window: dimensions
-      })
+
+    socket.on('resize-canvas', (dimensions) => {
+      this.resizeCanvas({...dimensions})
     })
+
   }
 
   toggleCanvas(){
@@ -33,21 +33,26 @@ class App extends Component {
   }
 
   setBounds(){
-    this.setState({
-      window: {
-        x: window.innerWidth,
-        y: window.innerHeight
-      }
-    })
-    socket.emit('setDimensions', {x: window.innerWidth, y: window.innerHeight})
+    let dimensions = {x: window.innerWidth, y: window.innerHeight}
+    this.resizeCanvas(dimensions)
+    socket.emit('set-canvas-dimensions', dimensions)
   }
 
-  //<Grid window={this.state.window} space={this.state.space} />
+  resizeCanvas({x, y}){
+    console.log(`Prompted: ${x} :: ${y}`)
+    this.setState({
+      window: {
+        x: x,
+        y: y
+      }
+    })
+  }
 
   render() {
     return (
       <Container>
-        <Canvas clear={this.state.clear} window={this.state.window} />    
+        <Grid window={this.state.window} space={this.state.space} />
+        <Canvas clear={this.state.clear} window={this.state.window} />
         <OptionsPicker>
           <input type="range" value={this.state.space} min="60" max="200"onChange={(e) => this.setState({space: parseInt(e.target.value)})}/>
           <button onClick={() => this.clearCanvas()} > Clear </button>

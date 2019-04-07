@@ -24,14 +24,18 @@ export default class Canvas extends Component{
         this.cctx = canvasConfig.init(this.canvas);
 
         socket.on('path-data', ( args ) => {
+
             if (!this.state.drawing){
                 this.penDown(args);
             }
+
             if (args === false){
                 this.stopDraw();
                 return;
             }
-            this.draw( args );
+            
+            this.cctx.lineTo( args.x, args.y );
+            this.cctx.stroke();
         })
     }
 
@@ -52,7 +56,7 @@ export default class Canvas extends Component{
 
     onDrag( e ){
         if (this.state.drawing){
-            socket.emit('host-path-data', { clientX: e.clientX, clientY: e.clientY });
+            socket.emit('host-path-data', this.cctx.calcRelative({ x: e.clientX, y: e.clientY }));
             this.draw( e )
         }
     }
