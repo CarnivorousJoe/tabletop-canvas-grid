@@ -16,6 +16,11 @@ app.get('/', (req, res, next) =>
         client.on('host-path-data', (args) => {
             client.broadcast.emit('path-data', args);
         })
+    
+        client.on('set-canvas-dimensions', (args) => {
+            console.log(`Dimensions: X:${args.x}, Y:${args.y}`);
+            client.broadcast.emit('resize-canvas', args);
+        })
     });
 
 server.listen(port);
