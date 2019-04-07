@@ -4,8 +4,8 @@ var app = express();
 
 const PORT = process.env.PORT || 3000;
 
-server = app.listen(PORT, function(){
-    console.log(`server is running on port ${ PORT }`)
+server = app.listen(3000, function(){
+    console.log(`server is running on port 3000`)
 });
 
 var socket = require('socket.io');
