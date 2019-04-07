@@ -16,7 +16,14 @@ io.on('connection', (client) => {
     })
 
     client.on('set-canvas-dimensions', (args) => {
-        console.log(`Dimensions: X:${args.x}, Y:${args.y}`);
         client.broadcast.emit('resize-canvas', args);
+    })
+
+    client.on('set-grid-spacing', (spacing) => {
+        client.broadcast.emit('set-spacing', spacing);
+    })
+
+    client.on('maybe-hide-canvas', (isHidden) => {
+        client.broadcast.emit('hide-canvas', isHidden);
     })
 });

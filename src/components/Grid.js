@@ -8,8 +8,7 @@ export default class Grid extends Component{
             space: this.props.space || 20
         }
         this.grid = React.createRef();
-        socket.on( 'ioHideCanvas', () => { this.hideCanvas() })
-        socket.on( 'ioShowCanvas', () => { this.showCanvas() })
+        socket.on( 'hide-canvas', (isHidden) => { this.hideCanvas(isHidden) })
     }
 
     componentDidMount(){
@@ -23,15 +22,9 @@ export default class Grid extends Component{
         this.renderGrid(this.ctx);
     }
 
-    hideCanvas(){
+    hideCanvas(isHidden){
         this.setState({
-            background: '#000000'
-        })
-    }
-
-    showCanvas(){
-        this.setState({
-            background: 'none'
+            background: isHidden ? '#000000' : 'none'
         })
     }
 

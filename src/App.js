@@ -17,16 +17,18 @@ class App extends Component {
     }
 
     socket.on('resize-canvas', (dimensions) => {
-      console.log(`Prompted: ${dimensions.x} :: ${dimensions.y}`)
       this.resizeCanvas({...dimensions})
     })
 
+    socket.on('set-spacing', (spacing) => {
+      this.setState({space: spacing})
+    })
   }
 
   toggleCanvas(){
     this.setState({
       hidden: !this.state.hidden
-    }, () => socket.emit('hideCanvas', this.state.hidden))
+    }, () => socket.emit('maybe-hide-canvas', this.state.hidden))
   }
 
   clearCanvas(){
@@ -48,13 +50,19 @@ class App extends Component {
     })
   }
 
+  setGridSpacing( e ){
+    let spacing = parseInt(e.target.value);
+    socket.emit('set-grid-spacing', spacing);
+    this.setState({space: spacing});
+  }
+
   render() {
     return (
       <Container>
         <Grid window={this.state.window} space={this.state.space} />
         <Canvas clear={this.state.clear} window={this.state.window} />
         <OptionsPicker>
-          <input type="range" value={this.state.space} min="60" max="200"onChange={(e) => this.setState({space: parseInt(e.target.value)})}/>
+          <input type="range" value={this.state.space} min="60" max="200" onChange={(e) => this.setGridSpacing( e )}/>
           <button onClick={() => this.clearCanvas()} > Clear </button>
           <button onClick={() => this.setBounds()} > Set Screen </button>
           <button onClick={() => this.toggleCanvas()} > { this.state.hidden ? 'Show Canvas' : 'Hide Canvas' } </button>
@@ -64,6 +72,6 @@ class App extends Component {
   }
 }
 
-const Container = (props) => <div>{props.children}</div>;
+const Container = (props) => <div style={{touchAction: 'none'}} >{props.children}</div>;
 
 export default App;
