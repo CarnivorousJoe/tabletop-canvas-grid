@@ -2,10 +2,8 @@ import React, { Component } from 'react';
 import Grid from './components/Grid';
 import Canvas from './components/Canvas';
 import OptionsPicker from './components/OptionsPicker';
-import { socket } from './components/api'
 
-import './App.css';
-
+import { socket } from './api/Socketio'
 class App extends Component {
   constructor(props){
     super(props);
@@ -24,17 +22,10 @@ class App extends Component {
     })
   }
 
-  hideCanvas(){
+  toggleCanvas(){
     this.setState({
       hidden: !this.state.hidden
     }, () => socket.emit('hideCanvas', this.state.hidden))
-  }
-
-  actions(action){
-    switch (action){
-      case 'clear':
-        this.clearCanvas();
-    }
   }
 
   clearCanvas(){
@@ -60,8 +51,7 @@ class App extends Component {
           <input type="range" value={this.state.space} min="60" max="200"onChange={(e) => this.setState({space: parseInt(e.target.value)})}/>
           <button onClick={() => this.clearCanvas()} > Clear </button>
           <button onClick={() => this.setBounds()} > Set Screen </button>
-          <button onClick={() => this.hideCanvas()} > { this.state.hidden ? 'Show Canvas' : 'Hide Canvas' } </button>
-
+          <button onClick={() => this.toggleCanvas()} > { this.state.hidden ? 'Show Canvas' : 'Hide Canvas' } </button>
         </OptionsPicker>
       </Container>
     );

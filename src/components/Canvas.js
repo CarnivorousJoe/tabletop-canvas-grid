@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { socket } from './api';
+import { socket } from '../api/Socketio';
 export default class Canvas extends Component{
 
     constructor( props ){

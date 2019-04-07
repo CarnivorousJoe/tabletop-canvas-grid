@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { socket } from './api'
+import { socket } from '../api/Socketio'
 export default class Grid extends Component{
 
     constructor(props){
@@ -63,7 +63,19 @@ export default class Grid extends Component{
     render(){
         this.renderGrid(this.ctx);
         return (
-            <canvas width={this.props.window.x} height={this.props.window.y} style={{'border': '1px solid red', 'pointerEvents': 'none', 'position': 'absolute', 'background': this.state.background || 'none'}} ref={this.grid} ></canvas>
+            <canvas
+            width={this.props.window.x}
+            height={this.props.window.y}
+            style={canvasStyle(this.state)}
+            ref={this.grid} ></canvas>
         )
     }
 }
+
+const canvasStyle = ( {background} ) => {
+    return({
+    'border': '1px solid red', 
+    'pointerEvents': 'none', 
+    'position': 'absolute', 
+    'background': background || 'none'
+    })}
