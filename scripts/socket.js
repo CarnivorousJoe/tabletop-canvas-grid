@@ -2,8 +2,10 @@ require('dotenv').config()
 var express = require('express');
 var app = express();
 
-server = app.listen(process.env.REACT_APP_SOCKETIO_PORT, function(){
-    console.log('server is running on port '+process.env.REACT_APP_SOCKETIO_PORT)
+const PORT = process.env.PORT || 3000;
+
+server = app.listen(PORT, function(){
+    console.log(`server is running on port ${ PORT }`)
 });
 
 var socket = require('socket.io');
