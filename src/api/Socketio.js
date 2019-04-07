@@ -1,5 +1,9 @@
 import openSocket from 'socket.io-client';
-const addr = 'http://ddwhiteboard-env.ebi8drsarf.us-east-2.elasticbeanstalk.com:8090';
-const socket = openSocket(addr);
+require('dotenv').config();
+
+let port = process.env.REACT_APP_SOCKETIO_PORT;
+const addr = 'http://localhost:';
+console.log(port+addr);
+const socket = openSocket(addr + port);
 
 export { socket }
