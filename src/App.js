@@ -17,6 +17,7 @@ class App extends Component {
     }
 
     socket.on('resize-canvas', (dimensions) => {
+      console.log(`Prompted: ${dimensions.x} :: ${dimensions.y}`)
       this.resizeCanvas({...dimensions})
     })
 
@@ -39,7 +40,6 @@ class App extends Component {
   }
 
   resizeCanvas({x, y}){
-    console.log(`Prompted: ${x} :: ${y}`)
     this.setState({
       window: {
         x: x,

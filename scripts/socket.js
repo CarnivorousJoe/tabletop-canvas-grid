@@ -16,6 +16,7 @@ io.on('connection', (client) => {
     })
 
     client.on('set-canvas-dimensions', (args) => {
+        console.log(`Dimensions: X:${args.x}, Y:${args.y}`);
         client.broadcast.emit('resize-canvas', args);
     })
 });
