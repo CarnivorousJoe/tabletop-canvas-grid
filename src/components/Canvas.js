@@ -19,61 +19,60 @@ export default class Canvas extends Component{
     }
 
     componentDidMount(){
-        this.canvasContext = this.canvas.current.getContext('2d');
-        this.canvasContext.bounds = this.canvas.current.getBoundingClientRect();
-
-        this.canvasContext.strokeStyle = "#000000";
-	    this.canvasContext.lineWidth = 1;
-        this.canvasContext.lineCap = "round";
-        this.canvasContext.width = window.innerWidth;
-        this.canvasContext.height = window.innerHeight;
+        this.cctx = this.canvas.current.getContext('2d');
+        this.cctx.bounds = this.canvas.current.getBoundingClientRect();
+        this.cctx.strokeStyle = "#000000";
+	    this.cctx.lineWidth = 1;
+        this.cctx.lineCap = "round";
+        this.cctx.width = window.innerWidth;
+        this.cctx.height = window.innerHeight;
         
-        this.canvasContext.clear = function() {
+        this.cctx.clear = function() {
             this.clearRect (0, 0, this.bounds.width, this.bounds.height);
         }
 
-        socket.on('ioPenDown', ( coordinates ) => this.penDown( coordinates ))
-        socket.on('ioPenUp', () => this.penUp())
-        socket.on('drawing', ( coordinates ) => this.draw( coordinates ))
-        socket.on('clear', () => { this.canvasContext.clear() })
+        socket.on('path-data', ( args ) => {
+            if (!this.state.drawing){
+                this.penDown(args);
+            }
+            if (args === false){
+                this.stopDraw();
+                return;
+            }
+            this.draw( args );
+        })
+
     }
 
     penUp(){
-        if (this.state.drawing){
-            this.setState( { drawing: false }, () => socket.emit('penUp') );
-        }
+        this.stopDraw();
+        socket.emit('host-path-data', false );
+    }
+
+    stopDraw(){
+        this.setState( { drawing: false } );
     }
     
-    penDown( {clientX, clientY} ){
-        this.canvasContext.bounds = this.canvas.current.getBoundingClientRect();
-        var path = this.calcPath(clientX, clientY);
-        if (!this.state.drawing){
-            this.setState({
-                drawing: true
-            }, () => socket.emit( 'penDown', {clientX: path.x, clientY: path.y} ));
-            this.canvasContext.beginPath();
-            this.canvasContext.moveTo( path.x, path.y );
-        }
+    penDown( { clientX, clientY } ){
+        this.setState( { drawing: true } );
+        this.cctx.beginPath();
+        this.cctx.moveTo(clientX, clientY);
     }
 
-    onDrag( {clientX, clientY} ){
+    onDrag( e ){
         if (this.state.drawing){
-            var path = this.calcPath(clientX, clientY);
-            socket.emit('drawing', {clientX: path.x, clientY: path.y} )
+            socket.emit('host-path-data', { clientX: e.clientX, clientY: e.clientY });
+            this.draw( e )
         }
     }
 
-    draw( {clientX, clientY} ){
-        this.canvasContext.lineTo(clientX, clientY);
-        this.canvasContext.stroke();
+    draw( { clientX, clientY } ){
+        this.cctx.lineTo( clientX, clientY );
+        this.cctx.stroke();
     }
 
     calcPath( x, y ){
-        var canvasBounds = this.canvas.current.getBoundingClientRect();
-        return {
-            x: x - canvasBounds.left,
-            y: y - canvasBounds.top
-        }
+
     }
 
     render(){

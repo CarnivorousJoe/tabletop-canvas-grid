@@ -42,11 +42,12 @@ class App extends Component {
     socket.emit('setDimensions', {x: window.innerWidth, y: window.innerHeight})
   }
 
+  //<Grid window={this.state.window} space={this.state.space} />
+
   render() {
     return (
       <Container>
-        <Canvas clear={this.state.clear} window={this.state.window} />
-        <Grid window={this.state.window} space={this.state.space} />
+        <Canvas clear={this.state.clear} window={this.state.window} />    
         <OptionsPicker>
           <input type="range" value={this.state.space} min="60" max="200"onChange={(e) => this.setState({space: parseInt(e.target.value)})}/>
           <button onClick={() => this.clearCanvas()} > Clear </button>

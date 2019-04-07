@@ -4,7 +4,9 @@
 process.env.BABEL_ENV = 'development';
 process.env.NODE_ENV = 'development';
 
-require('./socket.js');
+if (process.env.NODE_ENV === 'development'){
+  require('./socket.js');
+}
 
 // Makes the script crash on unhandled rejections instead of silently
 // ignoring them. In the future, promise rejections that are not handled will
@@ -15,6 +17,7 @@ process.on('unhandledRejection', err => {
 
 // Ensure environment variables are read.
 require('../config/env');
+
 
 
 const fs = require('fs');
